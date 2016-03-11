@@ -98,7 +98,7 @@ class S3File:
     def download(self, filename=None):
         pass
 
-    def head(self, lines_to_retrieve=10, chunksize=16384, line_separator='\n'):
+    def head(self, lines_to_retrieve=100, chunksize=16384, line_separator='\n'):
         client = get_client()
         response = client.get_object(Bucket=self.bucket, Key=self.key)
     
