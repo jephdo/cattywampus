@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+
+{% block title %}Cattywampus - Buckets{% endblock %}
+
+
+
+{% block content %}
+
+
+<div class="container">
+ <div class="page-header">
+        <h1>S3 Buckets</h1>
+        <p class="lead">derp</p>
+</div>
+  <div class="row">
+       <div class="col-lg-6">
+          <table class="table table-bordered table-hover">
+              <tr><th>Creation Date</th><th>Name</th></tr>
+              {% for bucket in buckets %}
+                <tr>
+                    <td>{{ bucket.CreationDate }}</td>
+                    <td>{{ bucket.Name }}</td>
+                </tr>
+              {% endfor %}
+          </table>
+      </div>
+  </div>
+</div>
+
+<footer class="blog-footer">
+  <p>Page generated at {{ now | format_date }}.</p>
+</footer>
+
+{% endblock %}

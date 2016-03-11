@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+
+{% block title %}Cattywampus - Files{% endblock %}
+
+
+
+{% block content %}
+
+
+<div class="container">
+ <div class="page-header">
+        <h1>{{ path }}</h1>
+</div>
+  <div class="row">
+       <div>
+          <table class="table table-hover">
+              <tr>
+                <th>Last Modified</th>
+                <th></th>
+                <th>File Size</th>
+                <th>Path</th>
+              </tr>
+              {% for obj in objects %}
+                <tr>
+                    <td>{{ obj.last_modified or 'DIR' }}</td>
+                    <td>
+                    {% if obj.last_modified %}
+                      {{ obj.last_modified | timesince }}
+                    {% else %}
+                      -
+                    {% endif %}
+                    <td>{{ obj.filesize or '-' }}</td>
+                    <td>
+                    <a href="{{ url_for('list_files', path='')}}{{ obj.truncated_path }}">
+                    {{ obj.path }}</a></td>
+                </tr>
+              {% endfor %}
+          </table>
+      </div>
+  </div>
+</div>
+
+<footer class="blog-footer">
+  <p>Page generated at {{ now | format_date }}.</p>
+</footer>
+
+{% endblock %}
