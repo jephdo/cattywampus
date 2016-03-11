@@ -2,10 +2,10 @@ from datetime import datetime, date
 import pytz
 
 
-from flask import Flask, render_template, abort
+from flask import Flask, Response, render_template, abort
 from flask.ext.bootstrap import Bootstrap
 
-from .s3 import ls, get_client, file_exists, S3File
+from .s3 import ls, get_client, file_exists, S3File, bucket_and_key_from_path
 
 
 app = Flask(__name__)
@@ -31,6 +31,27 @@ def show_buckets():
     buckets = response['Buckets']
     # return str(buckets)
     return render_template('buckets.html', buckets=buckets, now=datetime.now())
+
+
+@app.route('/download/<path:path>')
+def download_file(path):
+    path = validate_path(path)
+    if path.endswith('/'):
+        abort(404)
+    if not file_exists(path):
+        abort(404)
+
+    bucket, key = bucket_and_key_from_path(path)
+    content_stream = get_client().get_object(Bucket=bucket, Key=key)['Body']
+
+    def stream():
+        while True:
+            chunk = content_stream.read(262144) # stream at 256 kb
+            if not chunk:
+                break
+            yield chunk
+
+    return Response(stream())
 
 
 @app.route('/<path:path>')
