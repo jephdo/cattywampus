@@ -10,11 +10,13 @@
 
 <div class="container">
  <div class="page-header">
-        <h1>{{ path }}</h1>
+        <h1>{{ filename }}</h1>
+        <p>{{ path }}</p>
 </div>
   <div class="row">
+    <div class="bs-callout bs-callout-info" id="callout-type-dl-truncate"> <h4>Auto-truncating</h4> <p>Horizontal description lists will truncate terms that are too long to fit in the left column with <code>text-overflow</code>. In narrower viewports, they will change to the default stacked layout.</p> </div>
        <div>
-          {{ head }}
+          <pre>{{ head }}</pre>
       </div>
   </div>
 </div>

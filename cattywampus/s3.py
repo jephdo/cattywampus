@@ -156,6 +156,10 @@ class S3Directory:
         return os.path.join("s3://", self.bucket, self.prefix)
 
     @property
+    def filename(self):
+        return pathlib.Path(self.path).parts[-1] + '/'
+
+    @property
     def truncated_path(self):
         return self.path.replace('s3://','')
 

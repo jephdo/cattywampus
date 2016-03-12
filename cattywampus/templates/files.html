@@ -33,7 +33,7 @@
                     <td>{{ obj.filesize or '-' }}</td>
                     <td>
                       <a href="{{ url_for('list_files', path='')}}{{ obj.truncated_path }}">
-                      {{ obj.path }}</a>
+                      {{ obj.filename }}</a>
                     </td>
                     <td>
                       <a href="{{ url_for('download_file', path='')}}{{ obj.truncated_path }}" download>

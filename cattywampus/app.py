@@ -2,7 +2,7 @@ from datetime import datetime, date
 import pytz
 
 
-from flask import Flask, Response, render_template, abort
+from flask import Flask, Response, render_template, abort, redirect, url_for
 from flask.ext.bootstrap import Bootstrap
 
 from .s3 import ls, get_client, file_exists, S3File, bucket_and_key_from_path
@@ -32,12 +32,21 @@ def show_buckets():
     # return str(buckets)
     return render_template('buckets.html', buckets=buckets, now=datetime.now())
 
+@app.route('/s3://<path:path>')
+def redirect_urls_prefixed_s3(path):
+    # I want people to be able to directly enter in s3 paths into the url
+    # but I don't want that to be the official url. I.e. I will redirect a 
+    # request from `app.com/s3://br-user/jeph/tmp/` to `app.com/br-user/jeph/tmp/`
+    return redirect(url_for('list_files', path=path))
+
 
 @app.route('/download/<path:path>')
 def download_file(path):
     path = validate_path(path)
+    # you can't download a directory, so resource doesn't exist
     if path.endswith('/'):
         abort(404)
+    # check if the file/key exists on s3, if it doesn't page shouldn't exist
     if not file_exists(path):
         abort(404)
 
@@ -62,20 +71,23 @@ def list_files(path):
     # on the file
     if path.endswith('/'):
         objects = ls(path)
+        # if there's no files in the directory then there are no keys under this
+        # prefix so this directory doesn't exist i.e. 404
         if not objects:
             abort(404)
         return render_template('files.html', path=path, objects=objects, now=datetime.now())
     else:
         if file_exists(path):
-            file = S3File.from_s3path(path)
-            head = file.head()
-            return render_template('head.html', head=head, now=datetime.now())
+            return head_file(path)
         else:
             abort(404)
 
 
 def head_file(path):
-    pass
+    file = S3File.from_s3path(path)
+    head = '\n'.join(file.head())
+    return render_template('head.html', head=head, path=file.path, filename=file.filename, 
+        now=datetime.now())
     # make it look like the github page
     # show meta data: filename | 4.99 kb | last modified
     # https://github.com/boto/botocore/blob/develop/docs/make.bat
