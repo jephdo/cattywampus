@@ -60,7 +60,7 @@
                       <div class="btn-group pull-right" role="group" aria-label="...">
                             {% if not obj.is_dir %}
                             <button type="button" class="btn btn-default" >
-                              <a href="{{ url_for('download_file', path='')}}{{ obj.truncated_path }}" ><span class='glyphicon glyphicon-floppy-disk'></span></a></button>
+                              <a href="{{ url_for('download_file', path='')}}{{ obj.truncated_path }}" ><span class='glyphicon glyphicon-floppy-disk' download></span></a></button>
                             {% endif %}
                             
                       <button type="button" class="btn btn-default"  data-clipboard-text="{{ obj.path }}">

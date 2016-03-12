@@ -15,10 +15,23 @@
     <div class="col-md-2"></div>
     <div class="col-md-8">
         <br>
-        <a href="{{ parent_dir_url }}">Parent Directory</a>
+        <button type="button" class="btn btn-default">
+                <a href="{{ parent_dir_url }}"><span class='glyphicon glyphicon-level-up'></span></a>
+        </button>
+        <br>
+        <br>
         <div class="panel panel-default">
             <div class="panel-heading">
-                <h3 class="panel-title">{{ file.filename }} | Showing {{ shown_size }} of {{ file.size | bytes_to_human }} | Last modified {{ file.last_modified | timesince }}</h3>
+                <h3 class="panel-title">{{ file.filename }}                <div class="btn-group pull-right" role="group" aria-label="...">
+                            <button type="button" class="btn btn-default" >
+                              <a href="{{ url_for('download_file', path='')}}{{ file.truncated_path }}" ><span class='glyphicon glyphicon-floppy-disk' download></span></a></button>
+                            
+                      <button type="button" class="btn btn-default"  data-clipboard-text="{{ file.path }}">
+                        <span class='glyphicon glyphicon-copy'></span>
+                      </button>
+                      </div></h3>
+                Showing {{ shown_size | bytes_to_human }} of {{ file.size | bytes_to_human }} | Last modified {{ file.last_modified | timesince }}
+
                 <!-- <p>{{ file.path }}</p> -->
             </div>
             <div class="panel-body">
@@ -34,5 +47,11 @@
 <footer class="blog-footer">
   <p>Page generated at {{ now | format_time }} server time.</p>
 </footer>
+
+<script src="https://cdn.jsdelivr.net/clipboard.js/1.5.8/clipboard.min.js"></script>
+<script>
+  var btns = document.querySelectorAll('button');
+    var clipboard = new Clipboard(btns);
+  </script>
 
 {% endblock %}
