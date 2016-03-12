@@ -6,7 +6,7 @@ from flask.ext.bootstrap import Bootstrap
 from .filters import format_date, format_time, timesince, bytes_to_human
 from .s3 import ls, get_client, file_exists, S3File, bucket_and_key_from_path
 
-
+from config import Config
 
 
 app = Flask(__name__)
@@ -68,7 +68,7 @@ def download_file(path):
 
     def stream():
         while True:
-            chunk = content_stream.read(262144) # stream at 256 kb
+            chunk = content_stream.read(Config.STREAM_CHUNK_SIZE) 
             if not chunk:
                 break
             yield chunk
@@ -92,15 +92,16 @@ def list_files(path):
             parent_dir_url=get_url_for_parent_dir(path), now=datetime.now())
     else:
         if file_exists(path):
-            return head_file(path)
+            return preview_file(path)
         else:
             abort(404)
 
 
-def head_file(path):
+def preview_file(path):
     file = S3File.from_s3path(path)
-    head = '\n'.join(file.head())
-    return render_template('head.html', file=file, head=head,
+    head = file.read(Config.PREVIEW_CHUNK_SIZE, Config.PREVIEW_CHUNK_SIZE)
+    shown_size = Config.PREVIEW_CHUNK_SIZE if Config.PREVIEW_CHUNK_SIZE < file.size else file.size
+    return render_template('preview.html', file=file, head=head, shown_size=shown_size,
         parent_dir_url=get_url_for_parent_dir(path), now=datetime.now())
     # make it look like the github page
     # show meta data: filename | 4.99 kb | last modified

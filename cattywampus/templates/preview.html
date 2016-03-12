@@ -18,7 +18,7 @@
         <a href="{{ parent_dir_url }}">Parent Directory</a>
         <div class="panel panel-default">
             <div class="panel-heading">
-                <h3 class="panel-title">{{ file.filename }} | Showing 50K of {{ file.size | bytes_to_human }} | Last modified {{ file.last_modified | timesince }}</h3>
+                <h3 class="panel-title">{{ file.filename }} | Showing {{ shown_size }} of {{ file.size | bytes_to_human }} | Last modified {{ file.last_modified | timesince }}</h3>
                 <!-- <p>{{ file.path }}</p> -->
             </div>
             <div class="panel-body">

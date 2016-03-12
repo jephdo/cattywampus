@@ -6,6 +6,9 @@ class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'secret'
     SSL_DISABLE = False
 
+    PREVIEW_CHUNK_SIZE= 32768 # download 32kb of data when previewing a file
+    STREAM_CHUNK_SIZE = 262144 # stream at 256kb
+
     @staticmethod
     def init_app(app):
         pass

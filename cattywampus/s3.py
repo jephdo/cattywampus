@@ -102,7 +102,7 @@ class S3File:
         # more than the desired number of lines:
         return accrued_lines[:lines_to_retrieve]
 
-    def read(self, bytes_to_download=64000, chunksize=16384):
+    def read(self, bytes_to_download=65536, chunksize=16384):
         assert bytes_to_download > 0
         client = get_client()
         response = client.get_object(Bucket=self.bucket, Key=self.key)
