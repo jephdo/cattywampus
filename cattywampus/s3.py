@@ -10,23 +10,6 @@ from botocore.exceptions import ClientError
 logger = logging.getLogger(__name__)
 
 
-def _bytes_to_human(_bytes):
-    """Format number of bytes to a readable file size (e.g. 10.1 MB,
-    13 kB, etc.)"""
-    _bytes = float(_bytes)
-    for units in ['Bytes', 'kB', 'MB', 'GB', 'TB']:
-        if _bytes < 1000.:
-            # for anything bigger than bytes round to one decimal point
-            # for bytes no decimals
-            if units is not 'Bytes':
-                return "{:.1f} {}".format(_bytes, units)
-            else:
-                return "{:.0f} {}".format(_bytes, units)
-        _bytes /= 1000.
-    # if number of bytes is way too big just use petabytes
-    return "{:,.1f}{}".format(_bytes, "PB")
-
-
 def bucket_and_key_from_path(s3path):
     """Returns the bucket and key as a tuple from an S3 filepath."""
     m = re.compile("s3://([^/]+)/(.*)").match(s3path)
@@ -69,6 +52,8 @@ def ls(s3path):
 
 class S3File:
 
+    is_dir = False
+
     def __init__(self, bucket, key, last_modified, size, storage_class):
         self.bucket = bucket
         self.key = key
@@ -83,10 +68,6 @@ class S3File:
     @property
     def truncated_path(self):
         return self.path.replace('s3://','')
-
-    @property
-    def filesize(self):
-        return _bytes_to_human(self.size)
 
     @property
     def filename(self):
@@ -116,16 +97,35 @@ class S3File:
             unfinished_line = lines.pop()
             for line in lines:
                 accrued_lines.append(line)
+
         # it's possible that there may be extra bytes leftover so you fetch
         # more than the desired number of lines:
         return accrued_lines[:lines_to_retrieve]
+
+    def read(self, bytes_to_download=64000, chunksize=16384):
+        assert bytes_to_download > 0
+        client = get_client()
+        response = client.get_object(Bucket=self.bucket, Key=self.key)
+        content_stream = response['Body']
+        data = ''
+        downloaded_bytes = 0
+        while downloaded_bytes < bytes_to_download:
+            chunk = content_stream.read(chunksize).decode('utf-8')
+            if not chunk:
+                break
+            data += chunk
+            downloaded_bytes += chunksize
+        return data
 
     @classmethod
     def from_s3path(cls, s3path):
         bucket, key = bucket_and_key_from_path(s3path)
         client = get_client()
         response = client.get_object(Bucket=bucket, Key=key)
-        return cls(bucket, key, response['LastModified'], size=0, storage_class=None)
+        last_modified = response['LastModified']
+        size = response['ContentLength']
+        storage_class = response.get('StorageClass') 
+        return cls(bucket, key, last_modified, size, storage_class)
 
     @classmethod
     def from_dict(cls, bucket, _dict):
@@ -137,7 +137,7 @@ class S3File:
 
     def __repr__(self):
         path = self.path
-        filesize = self.filesize
+        filesize = self.size
         last_modified = self.last_modified.strftime('%b %d %H:%M')
         cls_name = self.__class__.__name__
         return """<class {cls_name} {path}, {filesize}, {last_modified}>""".format(**vars())
@@ -147,6 +147,9 @@ class S3Directory:
     """Representation of a directory on S3.
 
     """
+
+    is_dir = True
+
     def __init__(self, bucket, prefix):
         self.bucket = bucket
         self.prefix = prefix

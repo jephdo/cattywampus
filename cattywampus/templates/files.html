@@ -9,45 +9,80 @@
 
 
 <div class="container">
- <div class="page-header">
-        <h1>{{ path }}</h1>
-</div>
+
   <div class="row">
-       <div>
+       <div class="col-md-2"></div>
+       <div class="col-md-8">
+        <div class="page-header">
+        <h1>{{ path }}</h1>
+        </div>
           <table class="table table-hover">
               <tr>
-                <th>Last Modified</th>
-                <th></th>
-                <th>File Size</th>
-                <th>Path</th>
+                <th width="15%">last modified</th>
+                <th width="15%"></th>
+                <th width="5%">filesize</th>
+                <th width="50%">path</th>
+                <th width="15%">
+                  <button type="button" class="btn btn-default pull-right">
+                        <a href="{{ parent_dir_url }}"><span class='glyphicon glyphicon-level-up'></span></a>
+                      </button></th>
+                <!-- <th width="5%"></th> -->
               </tr>
               {% for obj in objects %}
                 <tr>
-                    <td>{{ obj.last_modified or 'DIR' }}</td>
                     <td>
-                    {% if obj.last_modified %}
-                      {{ obj.last_modified | timesince }}
-                    {% else %}
-                      -
-                    {% endif %}
-                    <td>{{ obj.filesize or '-' }}</td>
-                    <td>
-                      <a href="{{ url_for('list_files', path='')}}{{ obj.truncated_path }}">
-                      {{ obj.filename }}</a>
+                      {% if obj.is_dir %}
+                        -
+                      {% else %}
+                        {{ obj.last_modified | format_date }}
+                      {% endif %}
                     </td>
                     <td>
-                      <a href="{{ url_for('download_file', path='')}}{{ obj.truncated_path }}" download>
-                      download</a>
+                    {% if obj.is_dir %}
+                      -
+                    {% else %}
+                      {{ obj.last_modified | timesince }}
+                    {% endif %}
+                    <td style="text-align: right;">
+                    {% if obj.is_dir %}
+                      -
+                      {% else %}
+                      {{ obj.size | bytes_to_human }}
+                    {% endif %}
+                      </td>
+
+                    <td>
+                      <a href="{{ url_for('list_files', path='')}}{{ obj.truncated_path }}">
+                      {% if obj.is_dir %}
+                      <b>{{ obj.filename }}</b>{% else %}{{ obj.filename}}{% endif %}</a>
+                    </td>
+                    <td>
+                      <div class="btn-group pull-right" role="group" aria-label="...">
+                            {% if not obj.is_dir %}
+                            <button type="button" class="btn btn-default" >
+                              <a href="{{ url_for('download_file', path='')}}{{ obj.truncated_path }}" ><span class='glyphicon glyphicon-floppy-disk'></span></a></button>
+                            {% endif %}
+                            
+                      <button type="button" class="btn btn-default"  data-clipboard-text="{{ obj.path }}">
+                        <span class='glyphicon glyphicon-copy'></span>
+                      </button>
+                      </div>
                     </td>
                 </tr>
               {% endfor %}
           </table>
       </div>
+      <div class="col-md-2"></div>
   </div>
 </div>
 
 <footer class="blog-footer">
-  <p>Page generated at {{ now | format_date }}.</p>
+  <p>Page generated at {{ now | format_time }} server time.</p>
 </footer>
 
+<script src="https://cdn.jsdelivr.net/clipboard.js/1.5.8/clipboard.min.js"></script>
+<script>
+  var btns = document.querySelectorAll('button');
+    var clipboard = new Clipboard(btns);
+  </script>
 {% endblock %}

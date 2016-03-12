@@ -9,20 +9,30 @@
 
 
 <div class="container">
- <div class="page-header">
-        <h1>{{ filename }}</h1>
-        <p>{{ path }}</p>
-</div>
+
   <div class="row">
-    <div class="bs-callout bs-callout-info" id="callout-type-dl-truncate"> <h4>Auto-truncating</h4> <p>Horizontal description lists will truncate terms that are too long to fit in the left column with <code>text-overflow</code>. In narrower viewports, they will change to the default stacked layout.</p> </div>
-       <div>
-          <pre>{{ head }}</pre>
-      </div>
+
+    <div class="col-md-2"></div>
+    <div class="col-md-8">
+        <br>
+        <a href="{{ parent_dir_url }}">Parent Directory</a>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">{{ file.filename }} | Showing 50K of {{ file.size | bytes_to_human }} | Last modified {{ file.last_modified | timesince }}</h3>
+                <!-- <p>{{ file.path }}</p> -->
+            </div>
+            <div class="panel-body">
+                <pre>{{ head }}</pre>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2"></div>
+          
   </div>
 </div>
 
 <footer class="blog-footer">
-  <p>Page generated at {{ now | format_date }}.</p>
+  <p>Page generated at {{ now | format_time }} server time.</p>
 </footer>
 
 {% endblock %}
