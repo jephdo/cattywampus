@@ -26,7 +26,7 @@ def get_client():
 def file_exists(s3path):
     try:
         bucket, key = bucket_and_key_from_path(s3path)
-    except KeyError:
+    except ValueError:
         return False
     client = get_client()
     try:
