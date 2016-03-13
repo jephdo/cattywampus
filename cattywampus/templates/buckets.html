@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 
-{% block title %}Cattywampus - Buckets{% endblock %}
+{% block title %}Cattywampus - Files{% endblock %}
 
 
 
@@ -9,27 +9,55 @@
 
 
 <div class="container">
- <div class="page-header">
-        <h1>S3 Buckets</h1>
-        <p class="lead">derp</p>
-</div>
+
   <div class="row">
-       <div class="col-lg-6">
-          <table class="table table-bordered table-hover">
-              <tr><th>Creation Date</th><th>Name</th></tr>
+       <div class="col-md-2"></div>
+       <div class="col-md-8">
+        <div class="page-header">
+        <h1>{{ path }}</h1>
+        </div>
+          <table class="table table-hover">
+              <tr>
+                <th width="20%">last modified</th>
+                <th width="20%"></th>
+                <th width="5%">filesize</th>
+                <th width="40%">path</th>
+                <th width="15%"></th>
+              </tr>
               {% for bucket in buckets %}
                 <tr>
-                    <td>{{ bucket.CreationDate }}</td>
-                    <td>{{ bucket.Name }}</td>
+                    <td>
+                        {{ bucket.CreationDate | format_date }}
+                    </td>
+                    <td>{{ bucket.CreationDate | timesince }}
+                    <td style="text-align: right;">-</td>
+
+                    <td>
+                      <a href="{{ url_for('list_files', path='')}}{{ bucket.Name }}/">
+                      <b>{{ bucket.Name }}/</b></a>
+                    </td>
+                    <td>
+                      <div class="btn-group pull-right" role="group" aria-label="...">
+                      <button type="button" class="btn btn-default"  data-clipboard-text="s3://{{ bucket.Name }}/">
+                        <span class='glyphicon glyphicon-copy'></span>
+                      </button>
+                      </div>
+                    </td>
                 </tr>
               {% endfor %}
           </table>
       </div>
+      <div class="col-md-2"></div>
   </div>
 </div>
 
 <footer class="blog-footer">
-  <p>Page generated at {{ now | format_date }}.</p>
+  <p>Page generated at {{ now | format_time }} server time.</p>
 </footer>
 
+<script src="https://cdn.jsdelivr.net/clipboard.js/1.5.8/clipboard.min.js"></script>
+<script>
+  var btns = document.querySelectorAll('button');
+    var clipboard = new Clipboard(btns);
+  </script>
 {% endblock %}
