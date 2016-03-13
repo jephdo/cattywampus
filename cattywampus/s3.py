@@ -24,7 +24,10 @@ def get_client():
 
 
 def file_exists(s3path):
-    bucket, key = bucket_and_key_from_path(s3path)
+    try:
+        bucket, key = bucket_and_key_from_path(s3path)
+    except KeyError:
+        return False
     client = get_client()
     try:
         client.get_object(Bucket=bucket, Key=key)
