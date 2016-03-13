@@ -20,7 +20,9 @@ def bucket_and_key_from_path(s3path):
 
 def get_client():
     session = botocore.session.get_session()
-    return session.create_client('s3')
+    return session.create_client('s3',
+        aws_secret_access_key=os.environ['AWS_SECRET_ACCESS_KEY'],
+        aws_access_key_id=os.environ['AWS_ACCESS_KEY_ID'])
 
 
 def file_exists(s3path):
