@@ -35,6 +35,19 @@ def file_exists(s3path):
         return False
     return True
 
+def partition_objects(objects):
+    """Split a list of directories and objects (usually coming from a call to 
+    `ls`) into two separate lists of files and directories."""
+    files = []
+    dirs = []
+    for obj in objects:
+        if isinstance(obj, S3File):
+            files.append(obj)
+        elif isinstance(obj, S3Directory):
+            dirs.append(obj)
+        else:
+            raise AssertionError("Object is not either an S3File or S3Directory % s" % obj)
+    return files, dirs
 
 
 def ls(s3path):

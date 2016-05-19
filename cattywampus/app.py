@@ -4,7 +4,7 @@ from flask import Flask, Response, render_template, abort, redirect, url_for
 from flask.ext.bootstrap import Bootstrap
 
 from .filters import format_date, format_time, timesince, bytes_to_human
-from .s3 import ls, get_client, file_exists, S3File, bucket_and_key_from_path
+from .s3 import ls, get_client, file_exists, S3File, bucket_and_key_from_path, partition_objects
 
 from config import Config
 
@@ -83,12 +83,21 @@ def list_files(path):
     # otherwise assume that this is a file so check it exists and possibly do a head
     # on the file
     if path.endswith('/'):
+        # since it ends in slash, the last part is an empty string ''
+        dirname = path.split('/')[-2]  
         objects = ls(path)
+        files, dirs = partition_objects(objects)
+        dirstats = dict(
+            numdirs=len(dirs),
+            numfiles=len(files),
+            total_filesize=sum(f.size for f in files)
+        )
         # if there's no files in the directory then there are no keys under this
         # prefix so this directory doesn't exist i.e. 404
         if not objects:
             abort(404)
         return render_template('files.html', path=path, objects=objects, 
+            dirname=dirname, dirstats=dirstats,
             parent_dir_url=get_url_for_parent_dir(path), now=datetime.now())
     else:
         if file_exists(path):

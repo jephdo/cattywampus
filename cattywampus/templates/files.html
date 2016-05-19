@@ -11,19 +11,19 @@
 <div class="container">
 
   <div class="row">
-       <div class="col-md-2"></div>
-       <div class="col-md-8">
-        <div class="page-header">
-        <h1>{{ path }}</h1>
-        </div>
-          <table class="table table-hover">
+       <div class="col-md-1"></div>
+       <div class="col-md-10">
+        <h1 class="page-header">{{ dirname }}</h1>
+        <p class="lead">
+        Showing {{ dirstats.numdirs }} directories and {{ dirstats.numfiles}} files ({{ dirstats.total_filesize | bytes_to_human }})</p>
+          <table class="table table-striped">
               <tr>
                 <th width="15%">last modified</th>
                 <th width="15%"></th>
                 <th width="5%">filesize</th>
                 <th width="50%">path</th>
                 <th width="15%">
-                  <button type="button" class="btn btn-default pull-right">
+                  <button type="button" class="btn btn-default btn-sm pull-right">
                         <a href="{{ parent_dir_url }}"><span class='glyphicon glyphicon-level-up'></span></a>
                       </button></th>
                 <!-- <th width="5%"></th> -->
@@ -59,11 +59,11 @@
                     <td>
                       <div class="btn-group pull-right" role="group" aria-label="...">
                             {% if not obj.is_dir %}
-                            <button type="button" class="btn btn-default" >
+                            <button type="button" class="btn btn-default btn-sm" >
                               <a href="{{ url_for('download_file', path='')}}{{ obj.truncated_path }}" ><span class='glyphicon glyphicon-floppy-disk' download></span></a></button>
                             {% endif %}
                             
-                      <button type="button" class="btn btn-default"  data-clipboard-text="{{ obj.path }}">
+                      <button type="button" class="btn btn-default btn-sm"  data-clipboard-text="{{ obj.path }}">
                         <span class='glyphicon glyphicon-copy'></span>
                       </button>
                       </div>
@@ -72,7 +72,7 @@
               {% endfor %}
           </table>
       </div>
-      <div class="col-md-2"></div>
+      <div class="col-md-1"></div>
   </div>
 </div>
 

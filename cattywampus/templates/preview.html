@@ -12,12 +12,10 @@
 
   <div class="row">
 
-    <div class="col-md-2"></div>
-    <div class="col-md-8">
+    <div class="col-md-1"></div>
+    <div class="col-md-10">
         <br>
-        <button type="button" class="btn btn-default">
-                <a href="{{ parent_dir_url }}"><span class='glyphicon glyphicon-level-up'></span></a>
-        </button>
+
         <br>
         <br>
         <div class="panel panel-default">
@@ -29,6 +27,9 @@
                       <button type="button" class="btn btn-default"  data-clipboard-text="{{ file.path }}">
                         <span class='glyphicon glyphicon-copy'></span>
                       </button>
+                              <button type="button" class="btn btn-default">
+                <a href="{{ parent_dir_url }}"><span class='glyphicon glyphicon-level-up'></span></a>
+        </button>
                       </div></h3>
                 Showing {{ shown_size | bytes_to_human }} of {{ file.size | bytes_to_human }} | Last modified {{ file.last_modified | timesince }}
 
@@ -39,7 +40,7 @@
             </div>
         </div>
     </div>
-    <div class="col-md-2"></div>
+    <div class="col-md-1"></div>
           
   </div>
 </div>
