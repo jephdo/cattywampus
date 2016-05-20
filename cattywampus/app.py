@@ -76,6 +76,18 @@ def download_file(path):
     return Response(stream())
 
 
+@app.route('/sample/<path:path>')
+def sample_file(path):
+    path = validate_path(path)
+    if path.endswith('/') or not file_exists(path):
+        abort(404)
+    file = S3File.from_s3path(path)
+    head = '\n'.join(file.sample(n=10))
+    shown_size = len(head.encode())
+    return render_template('preview.html', file=file, head=head, shown_size=shown_size,
+        parent_dir_url=get_url_for_parent_dir(path), now=datetime.now())
+
+
 @app.route('/<path:path>')
 def list_files(path):
     path = validate_path(path)

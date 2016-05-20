@@ -1,5 +1,6 @@
 import os
 import re
+import random
 import logging
 import pathlib
 
@@ -132,6 +133,34 @@ class S3File:
             data += chunk
             downloaded_bytes += chunksize
         return data
+
+    def sample(self, n=10, fixed_width=200):
+        def get_random_positions(total_bytes, n):
+            return sorted([random.randrange(0, total_bytes) for _ in range(n)])
+
+        def get_line(byte_position, chunk):
+            lines = [line.encode() for line in chunk.decode().split('\n') if line]
+            assert lines, 'probably one fat line'
+            total_size = 0
+            for line in lines:
+                if byte_position <= total_size + len(line):
+                    return line.decode()
+                total_size += len(line)
+            # can't find a line? maybe line is too long
+            raise ValueError
+
+        def retrieve_line(client, byte_position, fixed_width):
+            start = max(byte_position - fixed_width, 0)
+            end = byte_position + fixed_width # doesnt matter if you go over
+            rangestr = 'bytes=%s-%s' % (start, end)
+            response = client.get_object(Bucket=self.bucket, Key=self.key, Range=rangestr)
+            chunk = response['Body'].read()
+            return get_line(byte_position - start, chunk)
+        
+        client = get_client()
+        random_positions = get_random_positions(self.size, n)
+
+        return list(set([retrieve_line(client, pos, fixed_width) for pos in random_positions]))
 
     @classmethod
     def from_s3path(cls, s3path):
