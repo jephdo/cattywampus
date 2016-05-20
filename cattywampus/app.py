@@ -56,14 +56,14 @@ def redirect_urls_prefixed_s3(path):
 @app.route('/download/<path:path>')
 def download_file(path):
     path = validate_path(path)
-    # you can't download a directory, so resource doesn't exist
-    if path.endswith('/'):
-        abort(404)
-    # check if the file/key exists on s3, if it doesn't page shouldn't exist
-    if not file_exists(path):
+    # Check
+    # 1) you can't download a directory (it ends with a /), so resource doesn't exist
+    # 2) check if the file/key exists on s3, if it doesn't page shouldn't exist
+    if path.endswith('/') or not file_exists(path):
         abort(404)
 
     bucket, key = bucket_and_key_from_path(path)
+    filename = key.split('/')[-1]
     content_stream = get_client().get_object(Bucket=bucket, Key=key)['Body']
 
     def stream():
@@ -73,7 +73,9 @@ def download_file(path):
                 break
             yield chunk
 
-    return Response(stream())
+    response = Response(stream())
+    response.headers['Content-Disposition'] = 'attachment; filename=%s' % filename
+    return response
 
 
 @app.route('/sample/<path:path>')
