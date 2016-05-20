@@ -20,7 +20,15 @@
         <br>
         <div class="panel panel-default">
             <div class="panel-heading">
-                <h3 class="panel-title">{{ file.filename }}                <div class="btn-group pull-right" role="group" aria-label="...">
+                <h3 class="panel-title"><a href="/{{ file.truncated_path }}">{{ file.filename }}</a>                
+                  <a href="/sample/{{ file.truncated_path }}"><button type="button" class="btn btn-warning">
+    Sample
+  </button></a>
+                <div class="btn-group pull-right" role="group" aria-label="...">
+
+
+
+                
                             <button type="button" class="btn btn-default" >
                               <a href="{{ url_for('download_file', path='')}}{{ file.truncated_path }}" ><span class='glyphicon glyphicon-floppy-disk' download></span></a></button>
                             
