@@ -36,6 +36,7 @@ def file_exists(s3path):
         return False
     return True
 
+
 def partition_objects(objects):
     """Split a list of directories and objects (usually coming from a call to 
     `ls`) into two separate lists of files and directories."""
@@ -135,6 +136,23 @@ class S3File:
         return data
 
     def sample(self, n=10, fixed_width=200):
+        """Sample lines from a text file on S3 without reading the whole 
+        file
+
+        n: Number of lines to sample
+        fixed_width: Estimated length of a line in bytes 
+
+        This sampling method assumes that all lines have the same length, which 
+        is never really the case. However, for all intents and purposes, especially 
+        for large files, this does the job of "sampling".
+
+        Methodology:
+            If a file is 10000 bytes, then sample 10 points from 0-10000. 
+            Using the S3 API, request a fixed width of bytes at those byte positions.
+            Decode the line to a string and split on newline characters looking 
+            for the full line.
+        """
+
         def get_random_positions(total_bytes, n):
             return sorted([random.randrange(0, total_bytes) for _ in range(n)])
 
