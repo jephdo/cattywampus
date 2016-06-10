@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from flask import Flask, Response, render_template, abort, redirect, url_for
+from flask import Flask, Response, render_template, abort, redirect, url_for, flash
 from flask.ext.bootstrap import Bootstrap
 
 from .filters import format_date, format_time, timesince, bytes_to_human
@@ -10,6 +10,7 @@ from config import Config
 
 
 app = Flask(__name__)
+app.secret_key = 'abc123'
 app.jinja_env.filters['format_date'] = format_date
 app.jinja_env.filters['format_time'] = format_time
 app.jinja_env.filters['timesince'] = timesince
@@ -122,7 +123,12 @@ def list_files(path):
 
 def preview_file(path):
     file = S3File.from_s3path(path)
-    head = file.read(Config.PREVIEW_CHUNK_SIZE, Config.PREVIEW_CHUNK_SIZE)
+    try:
+        head = file.read(Config.PREVIEW_CHUNK_SIZE, Config.PREVIEW_CHUNK_SIZE)
+    except Exception:
+        flash("Unable to preview file.", 'info')
+        return render_template('preview.html', file=file, head='', shown_size=0,
+            parent_dir_url=get_url_for_parent_dir(path), now=datetime.now())
     shown_size = Config.PREVIEW_CHUNK_SIZE if Config.PREVIEW_CHUNK_SIZE < file.size else file.size
     return render_template('preview.html', file=file, head=head, shown_size=shown_size,
         parent_dir_url=get_url_for_parent_dir(path), now=datetime.now())

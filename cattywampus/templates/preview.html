@@ -15,20 +15,28 @@
     <div class="col-md-1"></div>
     <div class="col-md-10">
         <br>
-
         <br>
-        <br>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {% for category, message in messages %}
+        <div class="alert alert-{{ category }}">
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+            {{ message }}
+        </div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
         <div class="panel panel-default">
             <div class="panel-heading">
                 <h3 class="panel-title"><a href="/{{ file.truncated_path }}">{{ file.filename }}</a>                
+                  {% if head %}
                   <a href="/sample/{{ file.truncated_path }}"><button type="button" class="btn btn-warning">
+                  }
     Sample
-  </button></a>
+  </button></a>{% endif %}
                 <div class="btn-group pull-right" role="group" aria-label="...">
 
 
-
-                
                             <button type="button" class="btn btn-default" >
                               <a href="{{ url_for('download_file', path='')}}{{ file.truncated_path }}" ><span class='glyphicon glyphicon-floppy-disk' download></span></a></button>
                             
