@@ -11,8 +11,19 @@
 <div class="container">
 
   <div class="row">
-       <div class="col-md-2"></div>
-       <div class="col-md-8">
+       <div class="col-md-1"></div>
+       <div class="col-md-10">
+              <br>
+       <form action="{{ url_for('search_file') }}" method="GET">
+         <div class="input-group">
+             <input type="Search" placeholder="Go to an S3 path..." class="form-control" name="s3path" />
+             <div class="input-group-btn">
+                 <button class="btn btn-info">
+                 <span class="glyphicon glyphicon-search"></span>
+                 </button>
+             </div>
+         </div>
+      </form>
         <div class="page-header">
         <h1>{{ path }}</h1>
         </div>
@@ -47,7 +58,7 @@
               {% endfor %}
           </table>
       </div>
-      <div class="col-md-2"></div>
+      <div class="col-md-1"></div>
   </div>
 </div>
 

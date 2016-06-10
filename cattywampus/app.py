@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from flask import Flask, Response, render_template, abort, redirect, url_for, flash
+from flask import Flask, Response, render_template, abort, redirect, url_for, flash, request
 from flask.ext.bootstrap import Bootstrap
 
 from .filters import format_date, format_time, timesince, bytes_to_human
@@ -52,6 +52,12 @@ def redirect_urls_prefixed_s3(path):
     # but I don't want that to be the official url. I.e. I will redirect a 
     # request from `app.com/s3://br-user/jeph/tmp/` to `app.com/br-user/jeph/tmp/`
     return redirect(url_for('list_files', path=path))
+
+@app.route('/search/')
+def search_file():
+    s3path = request.args.get('s3path')
+    s3path = validate_path(s3path)
+    return redirect(url_for('list_files', path=s3path.replace('s3://', '')))
 
 
 @app.route('/download/<path:path>')
