@@ -29,7 +29,7 @@
 
        <form action="{{ url_for('search_file') }}" method="GET">
          <div class="input-group">
-             <input type="Search" placeholder="Go to an S3 path..." class="form-control" name="s3path" />
+             <input type="Search" placeholder="{{ path }}" class="form-control" name="s3path" />
              <div class="input-group-btn">
                  <button class="btn btn-info">
                  <span class="glyphicon glyphicon-search"></span>
@@ -43,7 +43,7 @@
                 <h3 class="panel-title"><a href="/{{ file.truncated_path }}">{{ file.filename }}</a>                
                   {% if head %}
                   <a href="/sample/{{ file.truncated_path }}"><button type="button" class="btn btn-warning">
-                  }
+                  
     Sample
   </button></a>{% endif %}
                 <div class="btn-group pull-right" role="group" aria-label="...">

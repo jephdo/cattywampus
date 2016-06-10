@@ -134,10 +134,10 @@ def preview_file(path):
     except Exception:
         flash("Unable to preview file.", 'info')
         return render_template('preview.html', file=file, head='', shown_size=0,
-            parent_dir_url=get_url_for_parent_dir(path), now=datetime.now())
+            parent_dir_url=get_url_for_parent_dir(path), now=datetime.now(), path=path)
     shown_size = Config.PREVIEW_CHUNK_SIZE if Config.PREVIEW_CHUNK_SIZE < file.size else file.size
     return render_template('preview.html', file=file, head=head, shown_size=shown_size,
-        parent_dir_url=get_url_for_parent_dir(path), now=datetime.now())
+        parent_dir_url=get_url_for_parent_dir(path), now=datetime.now(), path=path)
     # make it look like the github page
     # show meta data: filename | 4.99 kb | last modified
     # https://github.com/boto/botocore/blob/develop/docs/make.bat

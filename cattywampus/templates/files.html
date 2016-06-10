@@ -16,7 +16,7 @@
        <br>
        <form action="{{ url_for('search_file') }}" method="GET">
          <div class="input-group">
-             <input type="Search" placeholder="Go to an S3 path..." class="form-control" name="s3path" />
+             <input type="Search" placeholder="{{ path }}" class="form-control" name="s3path" />
              <div class="input-group-btn">
                  <button class="btn btn-info">
                  <span class="glyphicon glyphicon-search"></span>
