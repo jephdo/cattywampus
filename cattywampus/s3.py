@@ -55,17 +55,17 @@ def partition_objects(objects):
 def ls(s3path):
     client = get_client()
     bucket, prefix = bucket_and_key_from_path(s3path)
-    objects = client.list_objects(Bucket=bucket, Prefix=prefix, Delimiter='/')
-    
-    if objects['IsTruncated']:
-        raise ValueError("Returned more than (%s) objects. Increase max keys argument" 
-            % objects['MaxKeys'])
-    if objects['ResponseMetadata']['HTTPStatusCode'] != 200:
-        raise ValueError
-    bucket = objects['Name']
-    directories = [S3Directory(bucket, obj['Prefix']) for obj in objects.get('CommonPrefixes', [])]
-    files = [S3File.from_dict(bucket, obj) for obj in objects.get('Contents', [])]
-    return directories + files
+    paginator = client.get_paginator('list_objects')
+
+    found_files_and_dirs = []
+    for page in paginator.paginate(Bucket=bucket, Prefix=prefix, Delimiter='/', PaginationConfig={'PageSize': 1000}):
+        # assert page['ResponseMetadata']['HTTPStatusCode'] != 200
+
+        bucket = page['Name']
+        directories = [S3Directory(bucket, obj['Prefix']) for obj in page.get('CommonPrefixes', [])]
+        files = [S3File.from_dict(bucket, obj) for obj in page.get('Contents', [])]
+        found_files_and_dirs = directories + files
+    return found_files_and_dirs
 
 
 class S3File:
