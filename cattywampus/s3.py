@@ -64,7 +64,7 @@ def ls(s3path):
         bucket = page['Name']
         directories = [S3Directory(bucket, obj['Prefix']) for obj in page.get('CommonPrefixes', [])]
         files = [S3File.from_dict(bucket, obj) for obj in page.get('Contents', [])]
-        found_files_and_dirs = directories + files
+        found_files_and_dirs += directories + files
     return found_files_and_dirs
 
 
